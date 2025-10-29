@@ -2,7 +2,7 @@ import { validationResult } from "express-validator";
 import Books from "../Models/Books.js";
 export const AddBook = async (req, res) => {
   try {
-    const { bookname,category, author, description, price, user } = req.body;
+    const { bookname, category, author, description, price, user } = req.body;
 
     const userId = req.user.id;
 
@@ -60,8 +60,8 @@ export const UpdateBook = async (req, res) => {
   try {
     const { id } = req.query;
     const userId = req.user.id;
-    const data = await Books.find({ user: userId, _id: id,isDeleted: false });
-     const errors = validationResult(req);
+    const data = await Books.find({ user: userId, _id: id, isDeleted: false });
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const FeildErrors = {};
       errors.array().forEach((err) => {
@@ -78,10 +78,10 @@ export const UpdateBook = async (req, res) => {
       console.log("Access denied");
       return res.json({ message: "cant't update the book" });
     }
-    const { bookname, author,category, description, price } = req.body;
+    const { bookname, author, category, description, price } = req.body;
     const UpdatedBook = await Books.findByIdAndUpdate(
       id,
-      { bookname, author, category,description, price },
+      { bookname, author, category, description, price },
       {
         new: true,
       }
@@ -89,32 +89,64 @@ export const UpdateBook = async (req, res) => {
     if (!UpdatedBook) {
       return res.status(404).json({ message: "book not found" });
     }
-    res.status(201).json({message:"Book have been updated",data:UpdatedBook})
+    res
+      .status(201)
+      .json({ message: "Book have been updated", data: UpdatedBook });
   } catch (err) {
-        res.status(500).json({message:"server Error",Error:err.message})
-        console.error(err,"catch")
+    res.status(500).json({ message: "server Error", Error: err.message });
+    console.error(err, "catch");
   }
 };
 
+export const deleteBook = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const userId = req.user.id;
+    const book = await Books.find({ user: userId, _id: id, isDeleted: false });
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" }, id);
+    }
+    const dltData = await Books.findByIdAndUpdate(
+      id,
+      { isDeleted: true },
+      { new: true }
+    );
 
-export const deleteBook =async(req,res)=>{
-  try{
-    const {id} =req.query
-    const userId =req.user.id
-    const book =await Books.find({user:userId,_id:id,isDeleted:false})
-    if(!book){
-      return res.status(404).json({message:"Book not found"},id)
+    if (!dltData) {
+      return res.status(404).json({ message: "page Not Found" });
     }
-    const dltData =await Books.findByIdAndUpdate(id,{isDeleted:true},{new:true})
-    
-   if(!dltData){
-            return res.status(404).json({message:"page Not Found"})
-    }
-    res.status(201).json({message:"book have been deleted",data:dltData})
+    res.status(201).json({ message: "book have been deleted", data: dltData });
+  } catch (err) {
+    console.log(err, "error is in the delete function ");
+    res.status(500).json("server error");
   }
-  catch(err){
-    console.log(err,"error is in the delete function ")
-    res.status(500).json("server error")
+};
+
+export const sinlgeBook = async (req, res) => {
+  try {
+    const {id} =req.query;
+    const book =await Books.find({isDeleted:false,_id:id})
+    res.status(201).json({message:"the single book is",data:book})    
+  } catch (err) {
+    console.log(err, "error is in the fathing single book");
   }
-  
-}
+};
+
+export const oldBooks = async (req, res) => {
+  try {
+    const data = await Books.find({ isDeleted: false, category: "Used" });
+    res.status(201).json({ message: "old books are", data: data });
+  } catch (err) {
+    console.log(err, "error is in the oldbook");
+    res.status(500).json({ message: "error is in the oldbook sever error" });
+  }
+};
+export const newBooks = async (req, res) => {
+  try {
+    const data = await Books.find({ isDeleted: false, category: "New" });
+    res.status(201).json({ message: "newBooks are", data: data });
+  } catch (err) {
+    console.log(err, "error is in the NewBook");
+    res.status(500).json({ message: "error is in the NewBook's sever error" });
+  }
+};
