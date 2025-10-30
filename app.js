@@ -6,6 +6,7 @@ import cors from 'cors'
 import Connect from './connection/conect.js'
 import UserRouter from './Routes/userRoute.js'
 import BooksRouter from './Routes/booksRoute.js'
+import paymentRouter from './Routes/paymentRoute.js'
 import path from 'path'
 
 const app = express()
@@ -19,7 +20,7 @@ Connect;
 app.use("/uploads",express.static(path.join(process.cwd(),"uploads")))
 app.use('/user',UserRouter)
 app.use("/Books",BooksRouter)
-
+app.use("/payment",paymentRouter);
 const PORT = process.env.PORT
 
 server.listen(PORT,()=>{

@@ -46,8 +46,20 @@ export const AddBook = async (req, res) => {
 
 export const allBooks = async (req, res) => {
   try {
-    const data = await Books.find({ isDeleted: false });
+    const page=parseInt(req.query.page)||1;
+    const limit=parseInt(req.query.limit)||8;
+
+
+    const skip=(page -1)*limit;
+
+    const total=await Books.countDocuments({isDeleted:false})
+
+    const data = await Books.find({ isDeleted: false })
+    .skip(skip)
+    .limit(limit)
     res.status(201).json({
+      totalPage:Math.ceil(total/limit),
+      totalIteam:total,
       message: "Books are",
       data: data,
     });
