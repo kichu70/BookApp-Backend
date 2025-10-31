@@ -72,7 +72,9 @@ export const UpdateBook = async (req, res) => {
   try {
     const { id } = req.query;
     const userId = req.user.id;
-    const data = await Books.find({ user: userId, _id: id, isDeleted: false });
+    const data = await Books.find({ user: userId, _id: id, isDeleted: false })
+    .populate("user","username")
+    .populate("feedbacks.user","username")
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const FeildErrors = {};
@@ -138,6 +140,8 @@ export const sinlgeBook = async (req, res) => {
   try {
     const {id} =req.query;
     const book =await Books.find({isDeleted:false,_id:id})
+      .populate("user","username")
+      .populate("feedbacks.user","username")
     res.status(201).json({message:"the single book is",data:book})    
   } catch (err) {
     console.log(err, "error is in the fathing single book");
@@ -162,3 +166,40 @@ export const newBooks = async (req, res) => {
     res.status(500).json({ message: "error is in the NewBook's sever error" });
   }
 };
+
+
+
+// -----------------feedbackcontroller----------------------------
+
+export const addFeedback =async(req,res)=>{
+  try{
+    const {bookId}=req.query;
+    const {comment,rating} =req.body;
+    const userId =req.user.id;
+
+    const book =await Books.findById(bookId);
+    if(!book){
+      return res.status(404).json({message:"Book not found"})
+    };
+    if(comment || rating){
+      book.feedbacks.push({
+        user:userId,
+        comment,
+        rating,
+      });
+      await book.save();
+       await book.populate("feedbacks.user", "username");
+      return res.status(201).json({
+        message:"FeedBack added successfully",
+        feedbacks: book.feedbacks,
+      })
+    }
+    return res.status(200).json({
+      message:"No feedBack Provieded "
+    })
+  }
+  catch(err){
+    res.status(500).json({message:"error is in the feedback",Error:err.message})
+    console.log(err,"error is the feedback backend")
+  }
+}
