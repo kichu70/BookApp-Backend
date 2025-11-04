@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 import express from "express"
-import { AddBook, addFeedback, allBooks, deleteBook, newBooks, oldBooks, sinlgeBook, UpdateBook } from '../Controll/booksController.js';
+import { AddBook, addrating, allBooks, deleteBook, newBooks, oldBooks, sinlgeBook, UpdateBook } from '../Controll/booksController.js';
 import { upload } from '../multer/Multer.js';
 import { check } from 'express-validator';
 import { verifyToken } from '../JWT/verifyToken.js';
@@ -58,6 +58,6 @@ router.get("/used-book",oldBooks)
 router.get("/new-book",newBooks)
 router.get("/single-book",sinlgeBook)
 
-router.post("/add-feedback",addFeedback)
+router.post("/add-rating",addrating)
 
 export default router;  

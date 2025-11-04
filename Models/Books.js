@@ -1,29 +1,5 @@
 import mongoose from "mongoose";
 
-
-// -------------------feed back of the book-----------------
-
-const feedBackSchema = new mongoose.Schema(
-  {
-    user:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref:"userData",
-      required:true,
-    },
-    comment:{
-      type:String,
-      required:false
-    },
-    rating:{
-      type:Number,
-      min:1,
-      max:5,
-      required:false,
-    },
-  },
-  {timestamps:true}
-);
-
 // --------------------book details  schema-------------------------
 const BooksSchema = new mongoose.Schema(
   {
@@ -47,9 +23,9 @@ const BooksSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    category:{
-      type:String,
-      required:true,
+    category: {
+      type: String,
+      required: true,
       enum: ["New", "Used"],
     },
     user: {
@@ -61,7 +37,14 @@ const BooksSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    feedbacks:[feedBackSchema],
+    rating: [
+      {value: {type: Number, min:1,max:5 },
+       user: { type: mongoose.Schema.Types.ObjectId, ref: "userData" } },
+    ],
+    avarageRating: {
+      type: Number,
+      default: 1.5,
+    },
   },
   {
     timestamps: true,
@@ -70,4 +53,3 @@ const BooksSchema = new mongoose.Schema(
 const Books = mongoose.model("Books-Data", BooksSchema);
 
 export default Books;
-
