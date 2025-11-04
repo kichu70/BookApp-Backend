@@ -4,9 +4,9 @@ import express from 'express'
 import http from "http"
 import cors from 'cors'
 import connect from './connection/connectDB.js'
-import UserRouter from './routes/userRoute.js'
-import BooksRouter from './routes/booksRoute.js'
-import paymentRouter from './routes/paymentRoute.js'
+import UserRouter from './routes,/userRoute.js'
+import BooksRouter from './routes,/booksRoute.js'
+import paymentRouter from './routes,/paymentRoute.js'
 import path from 'path'
 
 const app = express()
