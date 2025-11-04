@@ -2,10 +2,10 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 import express from "express"
-import { AddBook, addrating, allBooks, deleteBook, newBooks, oldBooks, sinlgeBook, UpdateBook } from '../Controll/booksController.js';
-import { upload } from '../multer/Multer.js';
+import { AddBook, addrating, allBooks, deleteBook, newBooks, oldBooks, sinlgeBook, UpdateBook } from '../controllers/booksController.js';
+import { upload } from '../middlewares/multerFileUploads.js';
 import { check } from 'express-validator';
-import { verifyToken } from '../JWT/verifyToken.js';
+import { verifyToken } from '../middlewares/verifyToken.js';
 
 
 

@@ -1,7 +1,7 @@
 import express from "express"
-import { AddUser, AllUser, DeletUser, login, UpdateUser } from "../Controll/userController.js";
+import { AddUser, AllUser, DeletUser, login, UpdateUser } from "../controllers/userController.js";
 import { check } from "express-validator";
-import { verifyToken } from "../JWT/verifyToken.js";
+import { verifyToken } from "../middlewares/verifyToken.js";
 
 
 const router =express.Router();

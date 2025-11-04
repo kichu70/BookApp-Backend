@@ -3,10 +3,10 @@ dotenv.config()
 import express from 'express'
 import http from "http"
 import cors from 'cors'
-import Connect from './connection/conect.js'
-import UserRouter from './Routes/userRoute.js'
-import BooksRouter from './Routes/booksRoute.js'
-import paymentRouter from './Routes/paymentRoute.js'
+import connect from './connection/connectDB.js'
+import UserRouter from './routes/userRoute.js'
+import BooksRouter from './routes/booksRoute.js'
+import paymentRouter from './routes/paymentRoute.js'
 import path from 'path'
 
 const app = express()
@@ -15,7 +15,7 @@ app.use(express.json())
 app.use(cors())
 
 
-Connect;
+connect;
 
 app.use("/uploads",express.static(path.join(process.cwd(),"uploads")))
 app.use('/user',UserRouter)
