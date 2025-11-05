@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 import express from "express"
-import { AddBook, addrating, allBooks, deleteBook, newBooks, oldBooks, sinlgeBook, UpdateBook } from '../controllers/booksController.js';
+import { AddBook, addrating, allBooks, deleteBook, getTopest, newBooks, oldBooks, sinlgeBook, UpdateBook } from '../controllers/booksController.js';
 import { upload } from '../middlewares/multerFileUploads.js';
 import { check } from 'express-validator';
 import { verifyToken } from '../middlewares/verifyToken.js';
@@ -59,5 +59,6 @@ router.get("/new-book",newBooks)
 router.get("/single-book",sinlgeBook)
 
 router.post("/add-rating",addrating)
+router.get("/top",getTopest)
 
 export default router;  

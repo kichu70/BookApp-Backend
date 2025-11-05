@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import Books from "../models/books.js"
+import Books from "../models/books.js";
 export const AddBook = async (req, res) => {
   try {
     const { bookname, category, author, description, price, user } = req.body;
@@ -46,20 +46,17 @@ export const AddBook = async (req, res) => {
 
 export const allBooks = async (req, res) => {
   try {
-    const page=parseInt(req.query.page)||1;
-    const limit=parseInt(req.query.limit)||8;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
 
+    const skip = (page - 1) * limit;
 
-    const skip=(page -1)*limit;
+    const total = await Books.countDocuments({ isDeleted: false });
 
-    const total=await Books.countDocuments({isDeleted:false})
-
-    const data = await Books.find({ isDeleted: false })
-    .skip(skip)
-    .limit(limit)
+    const data = await Books.find({ isDeleted: false }).skip(skip).limit(limit);
     res.status(201).json({
-      totalPage:Math.ceil(total/limit),
-      totalIteam:total,
+      totalPage: Math.ceil(total / limit),
+      totalIteam: total,
       message: "Books are",
       data: data,
     });
@@ -72,7 +69,7 @@ export const UpdateBook = async (req, res) => {
   try {
     const { id } = req.query;
     const userId = req.user.id;
-    const data = await Books.find({ user: userId, _id: id, isDeleted: false })
+    const data = await Books.find({ user: userId, _id: id, isDeleted: false });
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -137,10 +134,10 @@ export const deleteBook = async (req, res) => {
 
 export const sinlgeBook = async (req, res) => {
   try {
-    const {id} =req.query;
-    const book =await Books.find({isDeleted:false,_id:id})
+    const { id } = req.query;
+    const book = await Books.find({ isDeleted: false, _id: id });
 
-    res.status(201).json({message:"the single book is",data:book})    
+    res.status(201).json({ message: "the single book is", data: book });
   } catch (err) {
     console.log(err, "error is in the fathing single book");
   }
@@ -165,44 +162,67 @@ export const newBooks = async (req, res) => {
   }
 };
 
-
-export const addrating =async(req,res)=>{
-  try{
-    const userId=req.user.id
-    const {id}=req.query;
-    const {rating}=req.body;
-    if(!rating || rating<1 ||rating>5){
-      return res.status(400).json({message:"rating must be between 1 and 5"})
+export const addrating = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { id } = req.query;
+    const { rating } = req.body;
+    if (!rating || rating < 1 || rating > 5) {
+      return res
+        .status(400)
+        .json({ message: "rating must be between 1 and 5" });
     }
-    const book =await Books.findOne({isDeleted:false,_id:id})    
-    if(!book){
-      return res.status(404).json({message:"book not found !!"})
+    const book = await Books.findOne({ isDeleted: false, _id: id });
+    if (!book) {
+      return res.status(404).json({ message: "book not found !!" });
     }
-    console.log(rating) 
-    if(!Array.isArray(book.rating)){
-      book.rating=[];
+    console.log(rating);
+    if (!Array.isArray(book.rating)) {
+      book.rating = [];
     }
 
-    const alreadyRated =book.rating.find((r)=>r?.user?.toString()===userId.toString());
-    if(alreadyRated){
-      return res.status(400).json({message:"You already Rated"})
+    const alreadyRated = book.rating.find(
+      (r) => r?.user?.toString() === userId.toString()
+    );
+    if (alreadyRated) {
+      return res.status(400).json({ message: "You already Rated" });
     }
-    book.rating.push({user:userId,value:Number(rating)})
-    const total =book.rating.reduce((sum,r)=>sum+r.value,0);
-    const avarage =total/book.rating.length;
-    book.avarageRating =Number(avarage);
-    console.log(avarage)
-    
-    await book.save() 
+    book.rating.push({ user: userId, value: Number(rating) });
+    const total = book.rating.reduce((sum, r) => sum + r.value, 0);
+    const avarage = total / book.rating.length;
+    book.avarageRating = Number(avarage);
+    console.log(avarage);
 
+    await book.save();
 
-    res.status(201).json({message:"Rating added",data:book,newAvarage:avarage})
-    
-
-    
+    res
+      .status(201)
+      .json({ message: "Rating added", data: book, newAvarage: avarage });
+  } catch (err) {
+    res.status(500).json({ message: "server down rating ", err: err });
+    console.log(err, "error is in the erating backend");
   }
-  catch(err){
-    res.status(500).json({message:"server down rating ",err:err})
-    console.log(err,"error is in the erating backend")
+};
+
+export const getTopest = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+
+    const skip = (page - 1) * limit;
+
+    const total = await Books.countDocuments({ isDeleted: false });
+
+    const data = await Books.find({ isDeleted: false }).sort({avarageRating:-1}).skip(skip).limit(limit);
+    res.status(201).json({
+      totalPage: Math.ceil(total / limit),
+      totalIteam: total,
+      message: "Books are",
+      data: data,
+    });
+
+  } catch (err) {
+    res.status(500).json(err, "error is in the get top rated backend");
+    console.log(err, "error is in the get top book in the front end");
   }
-}
+};
