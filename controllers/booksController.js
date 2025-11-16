@@ -125,7 +125,7 @@ export const deleteBook = async (req, res) => {
     if (!dltData) {
       return res.status(404).json({ message: "page Not Found" });
     }
-    res.status(201).json({ message: "book have been deleted", data: dltData });
+     res.status(201).json({ message: "book have been deleted", data: dltData });
   } catch (err) {
     console.log(err, "error is in the delete function ");
     res.status(500).json("server error");
